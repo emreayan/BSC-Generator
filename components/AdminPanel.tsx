@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { Program, PortalType } from '../types';
-import { Save, X, Plus, Edit2, Trash2, Image as ImageIcon, CheckSquare, Lock, Upload, Loader, LayoutGrid } from 'lucide-react';
+import { compressImage } from '../services/imageUtils';
+import { Save, X, Plus, Edit2, Trash2, Image as ImageIcon, CheckSquare, Lock, Upload, Loader, LayoutGrid, Check } from 'lucide-react';
 
 interface AdminPanelProps {
   programs: Program[];
   currentPortal: PortalType;
   onSwitchPortal: (portal: PortalType) => void;
-  onSave: (program: Program) => void;
+  onSave: (program: Program) => Promise<boolean>; // Updated to return Promise
   onDelete: (id: string) => void;
   onClose: () => void;
 }
@@ -38,6 +38,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
   const [password, setPassword] = useState('');
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
   
+  // Save Status State: 'idle' | 'saving' | 'success'
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success'>('idle');
+  
   const [servicesText, setServicesText] = useState('');
   const [goalsText, setGoalsText] = useState('');
 
@@ -67,16 +70,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
       setServicesText('');
       setGoalsText('');
     }
+    setSaveStatus('idle');
   };
 
-  const handleSaveForm = (e: React.FormEvent) => {
+  const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProgram) return;
 
-    if (!editingProgram.name || !editingProgram.heroImage) {
-        alert("Lütfen program ismini ve kapak görselini giriniz.");
-        return;
-    }
+    // Removed validation checks as requested
 
     const finalProgram: Program = {
       ...editingProgram,
@@ -84,47 +85,64 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
       youngLearnersGoals: goalsText.split('\n').filter(s => s.trim() !== ''),
     };
 
-    onSave(finalProgram);
-    setEditingProgram(null);
-  };
-
-  const handleHeroImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setEditingProgram(prev => prev ? ({...prev, heroImage: reader.result as string}) : null);
-        };
-        reader.readAsDataURL(file);
+    setSaveStatus('saving');
+    const success = await onSave(finalProgram);
+    
+    if (success) {
+      setSaveStatus('success');
+      
+      // Keep "Saved" message for 1.5s before closing modal
+      setTimeout(() => {
+          setEditingProgram(null);
+          setSaveStatus('idle');
+      }, 1500);
+    } else {
+        setSaveStatus('idle');
     }
   };
 
-  const handleBannerImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHeroImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setEditingProgram(prev => prev ? ({...prev, bannerImage: reader.result as string}) : null);
-        };
-        reader.readAsDataURL(file);
+        try {
+            const compressed = await compressImage(file, 1000); // Admin Hero - moderate compression
+            setEditingProgram(prev => prev ? ({...prev, heroImage: compressed}) : null);
+        } catch (e) {
+            alert('Görsel işlenirken hata oluştu.');
+        }
     }
   };
 
-  const handleGalleryImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBannerImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        try {
+            const compressed = await compressImage(file, 1200); // Admin Banner
+            setEditingProgram(prev => prev ? ({...prev, bannerImage: compressed}) : null);
+        } catch (e) {
+            alert('Görsel işlenirken hata oluştu.');
+        }
+    }
+  };
+
+  const handleGalleryImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
      if (e.target.files) {
-        Array.from(e.target.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
+        const files = Array.from(e.target.files) as File[];
+        
+        for (const file of files) {
+            try {
+                const compressed = await compressImage(file, 800, 0.7); // Admin Gallery
                 setEditingProgram(prev => {
                     if (!prev) return null;
                     return {
                         ...prev,
-                        galleryImages: [...prev.galleryImages, reader.result as string]
+                        galleryImages: [...prev.galleryImages, compressed]
                     };
                 });
-            };
-            reader.readAsDataURL(file);
-        });
+            } catch (e) {
+                console.error("Gallery upload error", e);
+            }
+        }
      }
   };
 
@@ -210,7 +228,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                                         onChange={handleHeroImageUpload}
                                     />
                                 </label>
-                                <p className="text-xs text-slate-400 mt-2">Önerilen: 1200x600px</p>
+                                <p className="text-xs text-slate-400 mt-2">Önerilen: 1200x600px, Max 2MB</p>
                             </div>
                         </div>
                     </div>
@@ -237,7 +255,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                                         onChange={handleBannerImageUpload}
                                     />
                                 </label>
-                                <p className="text-xs text-slate-400 mt-2">PDF'in üst kısmı için (Önerilen: 2000x300px)</p>
+                                <p className="text-xs text-slate-400 mt-2">PDF'in üst kısmı için (Önerilen: 2000x300px), Max 2MB</p>
                             </div>
                         </div>
                     </div>
@@ -248,7 +266,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     <div>
                         <label className={labelClass}>Program İsmi</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.name}
                             onChange={e => setEditingProgram({...editingProgram, name: e.target.value})}
@@ -258,7 +276,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     <div>
                         <label className={labelClass}>Konum / Okul</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.location}
                             onChange={e => setEditingProgram({...editingProgram, location: e.target.value})}
@@ -268,7 +286,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     <div>
                         <label className={labelClass}>Şehir</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.city}
                             onChange={e => setEditingProgram({...editingProgram, city: e.target.value})}
@@ -278,7 +296,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     <div>
                         <label className={labelClass}>Ülke</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.country}
                             onChange={e => setEditingProgram({...editingProgram, country: e.target.value})}
@@ -292,7 +310,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     <div>
                         <label className={labelClass}>Yaş Aralığı</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.ageRange}
                             onChange={e => setEditingProgram({...editingProgram, ageRange: e.target.value})}
@@ -302,7 +320,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     <div>
                         <label className={labelClass}>Tarihler</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.dates}
                             onChange={e => setEditingProgram({...editingProgram, dates: e.target.value})}
@@ -312,7 +330,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     <div>
                         <label className={labelClass}>Süre Aralığı</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.duration}
                             onChange={e => setEditingProgram({...editingProgram, duration: e.target.value})}
@@ -339,7 +357,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     <div>
                         <label className={labelClass}>Fiyat Notu</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.basePriceNote}
                             onChange={e => setEditingProgram({...editingProgram, basePriceNote: e.target.value})}
@@ -349,7 +367,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                      <div className="md:col-span-2">
                         <label className={labelClass}>Konaklama Detayı</label>
                         <input 
-                            type="text" required
+                            type="text"
                             className={inputClass}
                             value={editingProgram.accommodationDetails}
                             onChange={e => setEditingProgram({...editingProgram, accommodationDetails: e.target.value})}
@@ -358,35 +376,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     </div>
                  </div>
 
-                {/* Large Text Areas */}
+                {/* Lists */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className={labelClass}>Açıklama</label>
-                        <textarea 
-                            required
-                            className={`${inputClass} h-40 resize-none`}
-                            value={editingProgram.description}
-                            onChange={e => setEditingProgram({...editingProgram, description: e.target.value})}
-                            placeholder="Program hakkında genel tanıtım yazısı..."
-                        />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Dahil Hizmetler (Her satıra bir tane)</label>
+                        <label className={labelClass}>Dahil Hizmetler (Her satıra bir tane - Markdown Destekli)</label>
                         <textarea 
                             className={`${inputClass} h-40 font-mono text-sm`}
                             value={servicesText}
                             onChange={e => setServicesText(e.target.value)}
-                            placeholder="Haftada 20 ders&#10;Gezi programı&#10;Sertifika"
+                            placeholder="Haftada 20 **ders**&#10;Gezi programı&#10;Sertifika"
                         />
+                        <p className="text-[10px] text-slate-400 mt-1">**Kalın** ve *İtalik* yazı desteklenir.</p>
                     </div>
                      <div className="md:col-span-2">
-                        <label className={labelClass}>Young Learners Will... (Her satıra bir tane)</label>
+                        <label className={labelClass}>Kazanımlar... (Her satıra bir tane - Markdown Destekli)</label>
                         <textarea 
                             className={`${inputClass} h-32 font-mono text-sm`}
                             value={goalsText}
                             onChange={e => setGoalsText(e.target.value)}
-                            placeholder="İngilizce konuşma güvenini artırmak&#10;Farklı kültürleri tanımak&#10;Bağımsızlık kazanmak"
+                            placeholder="**Özgüven** kazanmak&#10;*Kültürel* etkileşim&#10;Bağımsızlık"
                         />
+                        <p className="text-[10px] text-slate-400 mt-1">**Kalın** ve *İtalik* yazı desteklenir.</p>
                     </div>
                 </div>
 
@@ -440,10 +450,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ programs, currentPortal, onSwit
                     </button>
                     <button 
                         type="submit" 
-                        className="px-8 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all hover:translate-y-0.5"
+                        disabled={saveStatus !== 'idle'}
+                        className={`px-8 py-3 rounded-lg text-white font-bold flex items-center gap-2 shadow-lg transition-all hover:translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed ${saveStatus === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                     >
-                        <Save className="w-5 h-5" />
-                        Programı Kaydet
+                        {saveStatus === 'saving' && <Loader className="w-5 h-5 animate-spin" />}
+                        {saveStatus === 'success' && <Check className="w-5 h-5" />}
+                        {!['saving', 'success'].includes(saveStatus) && <Save className="w-5 h-5" />}
+                        
+                        {saveStatus === 'saving' && 'Kaydediliyor...'}
+                        {saveStatus === 'success' && 'Kaydedildi!'}
+                        {saveStatus === 'idle' && 'Programı Kaydet'}
                     </button>
                 </div>
             </form>

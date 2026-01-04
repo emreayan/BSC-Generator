@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { QuoteDetails, Program, PortalType } from '../types';
 import { Calculator, Send, Users, Clock, Building2, UserCircle, Plane } from 'lucide-react';
@@ -86,8 +85,7 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
             <div className="relative">
               <input
                 type="text"
-                required
-                className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#6499E9] focus:border-[#6499E9] outline-none transition-all"
                 value={details.agencyName}
                 onChange={(e) => setDetails({...details, agencyName: e.target.value})}
                 placeholder="Örn: Global Eğitim"
@@ -100,8 +98,7 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
             <div className="relative">
               <input
                 type="text"
-                required
-                className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#6499E9] focus:border-[#6499E9] outline-none transition-all"
                 value={details.consultantName}
                 onChange={(e) => setDetails({...details, consultantName: e.target.value})}
                 placeholder="Örn: Ahmet Yılmaz"
@@ -120,9 +117,8 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
             <div className="relative">
               <input
                 type="number"
-                required
                 min="1"
-                className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#6499E9] focus:border-[#6499E9] outline-none transition-all"
                 value={details.studentCount}
                 onChange={(e) => setDetails({...details, studentCount: e.target.value})}
                 placeholder="15"
@@ -137,9 +133,8 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
                 <div className="relative">
                 <input
                     type="number"
-                    required
                     min="0"
-                    className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#6499E9] focus:border-[#6499E9] outline-none transition-all"
                     value={details.groupLeaderCount}
                     onChange={(e) => setDetails({...details, groupLeaderCount: e.target.value})}
                     placeholder="1"
@@ -155,9 +150,8 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
           <div className="relative">
             <input
               type="number"
-              required
               min="1"
-              className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#6499E9] focus:border-[#6499E9] outline-none transition-all"
               value={details.durationWeeks}
               onChange={(e) => setDetails({...details, durationWeeks: e.target.value})}
               placeholder="Örn: 2"
@@ -166,25 +160,25 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
           </div>
         </div>
 
-        {/* Fiyatlandırma */}
-        <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100 space-y-3">
+        {/* Fiyatlandırma - Updated Colors */}
+        <div className="bg-[#F0F9FF] p-3 rounded-lg border border-[#9EDDFF] space-y-3">
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                  <label className="block text-xs font-bold text-blue-800 uppercase tracking-wide">
+                  <label className="block text-xs font-bold text-[#6499E9] uppercase tracking-wide">
                     Öğrenci Başı Toplam Ücret ({currencySymbol})
                   </label>
-                  <div className="flex bg-white rounded-md p-0.5 border border-blue-200">
+                  <div className="flex bg-white rounded-md p-0.5 border border-[#9EDDFF]">
                       <button 
                         type="button"
                         onClick={() => setDetails({...details, priceType: 'Gross'})}
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded ${details.priceType === 'Gross' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:text-blue-600'}`}
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded ${details.priceType === 'Gross' ? 'bg-[#6499E9] text-white' : 'text-slate-500 hover:text-[#6499E9]'}`}
                       >
                         GROSS
                       </button>
                       <button 
                         type="button"
                         onClick={() => setDetails({...details, priceType: 'Net'})}
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded ${details.priceType === 'Net' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:text-blue-600'}`}
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded ${details.priceType === 'Net' ? 'bg-[#6499E9] text-white' : 'text-slate-500 hover:text-[#6499E9]'}`}
                       >
                         NET
                       </button>
@@ -193,46 +187,45 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
               <div className="relative">
                 <input
                   type="text"
-                  required
-                  className="w-full px-4 py-2.5 bg-white border border-blue-200 text-slate-800 font-bold rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  className="w-full px-4 py-2.5 bg-white border border-[#9EDDFF] text-slate-800 font-bold rounded-lg focus:ring-2 focus:ring-[#6499E9] focus:border-[#6499E9] outline-none transition-all"
                   value={details.pricePerStudent}
                   onChange={(e) => setDetails({...details, pricePerStudent: e.target.value})}
                   placeholder={`Örn: ${currencySymbol}1,250`}
                 />
-                <Calculator className="absolute right-3 top-2.5 w-5 h-5 text-blue-400 opacity-50" />
+                <Calculator className="absolute right-3 top-2.5 w-5 h-5 text-[#9EDDFF]" />
               </div>
             </div>
 
             {isGroupPortal && (
                 <div>
-                <label className="block text-xs font-bold text-blue-800 uppercase tracking-wide mb-1.5">
+                <label className="block text-xs font-bold text-[#6499E9] uppercase tracking-wide mb-1.5">
                     Ek Grup Lideri Ücreti ({currencySymbol})
                 </label>
                 <div className="relative">
                     <input
                     type="text"
-                    className="w-full px-4 py-2.5 bg-white border border-blue-200 text-slate-800 font-medium rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-white border border-[#9EDDFF] text-slate-800 font-medium rounded-lg focus:ring-2 focus:ring-[#6499E9] focus:border-[#6499E9] outline-none transition-all"
                     value={details.extraLeaderPrice}
                     onChange={(e) => setDetails({...details, extraLeaderPrice: e.target.value})}
                     placeholder={`Opsiyonel: ${currencySymbol}500`}
                     />
-                    <Calculator className="absolute right-3 top-2.5 w-5 h-5 text-blue-400 opacity-50" />
+                    <Calculator className="absolute right-3 top-2.5 w-5 h-5 text-[#9EDDFF]" />
                 </div>
                 </div>
             )}
         </div>
 
-        {/* Airport Transfer Section */}
-        <div className="bg-emerald-50/50 p-3 rounded-lg border border-emerald-100 space-y-3">
+        {/* Airport Transfer Section - Updated Colors */}
+        <div className="bg-[#F0F9FF] p-3 rounded-lg border border-[#9EDDFF] space-y-3">
              <div className="flex items-center gap-2 mb-1">
-                 <Plane className="w-4 h-4 text-emerald-600" />
-                 <span className="text-xs font-bold text-emerald-800 uppercase tracking-wide">Havaalanı Transferi</span>
+                 <Plane className="w-4 h-4 text-[#6499E9]" />
+                 <span className="text-xs font-bold text-[#6499E9] uppercase tracking-wide">Havaalanı Transferi</span>
              </div>
              
              <div>
-                <label className="block text-[10px] font-bold text-emerald-700 uppercase mb-1">Havaalanı</label>
+                <label className="block text-[10px] font-bold text-[#6499E9] uppercase mb-1">Havaalanı</label>
                 <select
-                    className="w-full px-3 py-2 bg-white border border-emerald-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-[#9EDDFF] rounded-lg text-sm focus:ring-2 focus:ring-[#6499E9] outline-none"
                     value={details.transferAirport}
                     onChange={(e) => setDetails({...details, transferAirport: e.target.value})}
                 >
@@ -244,9 +237,9 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
              </div>
 
              <div>
-                <label className="block text-[10px] font-bold text-emerald-700 uppercase mb-1">Transfer Tipi</label>
+                <label className="block text-[10px] font-bold text-[#6499E9] uppercase mb-1">Transfer Tipi</label>
                 <select
-                    className="w-full px-3 py-2 bg-white border border-emerald-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-full px-3 py-2 bg-white border border-[#9EDDFF] rounded-lg text-sm focus:ring-2 focus:ring-[#6499E9] outline-none"
                     value={details.transferType}
                     onChange={(e) => setDetails({...details, transferType: e.target.value as any})}
                 >
@@ -260,7 +253,7 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
         <div>
           <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Ek Notlar (Opsiyonel)</label>
           <textarea
-            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all h-20 resize-none"
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#6499E9] focus:border-[#6499E9] outline-none transition-all h-20 resize-none"
             value={details.notes}
             onChange={(e) => setDetails({...details, notes: e.target.value})}
             placeholder="Vize dahil, uçak bileti hariç..."
@@ -269,7 +262,7 @@ const QuoteForm: React.FC<QuoteFormProps> = ({ program, onGenerate, onCancel, po
 
         <button
           type="submit"
-          className="w-full py-3.5 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-200 hover:shadow-blue-300 flex items-center justify-center gap-2 mt-2"
+          className="w-full py-3.5 px-4 bg-[#6499E9] text-white font-bold rounded-lg hover:bg-[#5a8bxd5] transition-all duration-200 shadow-lg shadow-blue-200 flex items-center justify-center gap-2 mt-2"
         >
           <Send className="w-5 h-5" />
           PDF Önizleme Oluştur

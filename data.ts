@@ -1,4 +1,5 @@
 
+
 import { Program } from './types';
 
 // --- YOUNG LEARNERS GROUPS DATA (The full detailed list) ---
@@ -41,7 +42,12 @@ export const INITIAL_PROGRAMS_YL_GROUPS: Program[] = [
         'https://picsum.photos/400/300?random=103',
         'https://picsum.photos/400/300?random=104'
     ],
-    timetableImages: [],
+    // Placeholders for Standard, Gold, Platinum timetables
+    timetableImages: [
+        'https://placehold.co/800x400/EEE/31343C?text=Standard+Package',
+        'https://placehold.co/800x400/FFF8E1/B45309?text=Gold+Package',
+        'https://placehold.co/800x400/F1F5F9/475569?text=Platinum+Package'
+    ],
     basePriceNote: 'Fiyat Teklifi Alınız'
   },
   {
