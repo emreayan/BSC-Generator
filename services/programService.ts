@@ -72,53 +72,53 @@ export const programService = {
 
   async saveProgram(program: Program, portal: PortalType): Promise<Program | null> {
     const dbPayload = mapProgramToDb(program, portal);
-    
+
     // Payload Size Check (approximate)
     const payloadString = JSON.stringify(dbPayload);
     const sizeInBytes = new Blob([payloadString]).size;
     const sizeInMB = sizeInBytes / (1024 * 1024);
 
     if (sizeInMB > 5) {
-        alert(`UYARI: Veri paketi boyutu çok büyük (${sizeInMB.toFixed(2)} MB). Kaydetme işlemi başarısız olabilir. Lütfen daha az veya daha küçük görseller kullanın.`);
+      alert(`UYARI: Veri paketi boyutu çok büyük (${sizeInMB.toFixed(2)} MB). Kaydetme işlemi başarısız olabilir. Lütfen daha az veya daha küçük görseller kullanın.`);
     }
-    
+
     try {
-        if (program.id && program.id.length > 20) {
-          // Update existing UUID
-          const { data, error } = await supabase
-            .from('programs')
-            .update(dbPayload)
-            .eq('id', program.id)
-            .select()
-            .single();
-            
-          if (error) throw error;
-          return mapDbToProgram(data);
-        } else {
-          // Insert new
-          const { data, error } = await supabase
-            .from('programs')
-            .insert(dbPayload)
-            .select()
-            .single();
+      if (program.id && program.id.length > 20) {
+        // Update existing UUID
+        const { data, error } = await supabase
+          .from('programs')
+          .update(dbPayload)
+          .eq('id', program.id)
+          .select()
+          .single();
 
-          if (error) throw error;
-          return mapDbToProgram(data);
-        }
+        if (error) throw error;
+        return mapDbToProgram(data);
+      } else {
+        // Insert new
+        const { data, error } = await supabase
+          .from('programs')
+          .insert(dbPayload)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return mapDbToProgram(data);
+      }
     } catch (error: any) {
-        console.error('Error saving program to Supabase:', error);
-        
-        let errorMessage = 'Bilinmeyen bir hata oluştu.';
-        if (error.code === '23505') {
-             errorMessage = 'Benzersizlik kısıtlaması ihlali (Duplicate entry).';
-        } else if (error.message && error.message.includes('payload')) {
-             errorMessage = 'Veri boyutu çok büyük! Lütfen görselleri küçültün.';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
+      console.error('Error saving program to Supabase:', error);
 
-        alert(`Kaydetme Hatası: ${errorMessage}`);
-        throw error;
+      let errorMessage = 'Bilinmeyen bir hata oluştu.';
+      if (error.code === '23505') {
+        errorMessage = 'Benzersizlik kısıtlaması ihlali (Duplicate entry).';
+      } else if (error.message && error.message.includes('payload')) {
+        errorMessage = 'Veri boyutu çok büyük! Lütfen görselleri küçültün.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      alert(`Kaydetme Hatası: ${errorMessage}`);
+      throw error;
     }
   },
 
@@ -142,7 +142,7 @@ export const programService = {
     else if (portal === 'ADULTS') dataToSeed = INITIAL_PROGRAMS_ADULTS;
 
     for (const prog of dataToSeed) {
-        await this.saveProgram({...prog, id: ''}, portal); 
+      await this.saveProgram({ ...prog, id: '' }, portal);
     }
   },
 
@@ -154,8 +154,8 @@ export const programService = {
       .eq('portal_type', portal);
 
     if (error) {
-        console.error("Error checking existing programs", error);
-        return;
+      console.error("Error checking existing programs", error);
+      return;
     }
 
     const currentNames = currentDbPrograms.map(p => p.name);
@@ -171,27 +171,61 @@ export const programService = {
 
     // 4. Insert missing programs
     if (missingPrograms.length > 0) {
-        console.log(`Restoring ${missingPrograms.length} missing programs for ${portal}...`);
-        for (const prog of missingPrograms) {
-            // Save as new record (empty ID)
-            await this.saveProgram({ ...prog, id: '' }, portal);
-        }
-        return true; // Indicates changes were made
+      console.log(`Restoring ${missingPrograms.length} missing programs for ${portal}...`);
+      for (const prog of missingPrograms) {
+        // Save as new record (empty ID)
+        await this.saveProgram({ ...prog, id: '' }, portal);
+      }
+      return true; // Indicates changes were made
     }
     return false; // No changes
   },
 
   async resetAndSeedDatabase(portal: PortalType) {
     const { error } = await supabase
-        .from('programs')
-        .delete()
-        .eq('portal_type', portal);
-    
+      .from('programs')
+      .delete()
+      .eq('portal_type', portal);
+
     if (error) {
-        console.error('Error deleting programs:', error);
-        throw error;
+      console.error('Error deleting programs:', error);
+      throw error;
     }
-    
+
     await this.seedDatabase(portal);
+  },
+
+  async fetchSettings() {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('*')
+      .eq('id', 'global_settings')
+      .single();
+
+    if (error) {
+      console.error('Error fetching settings:', error);
+      return null;
+    }
+    return {
+      logoUrl: data.default_logo_url,
+      bannerUrl: data.default_banner_url
+    };
+  },
+
+  async saveSettings(settings: { logoUrl?: string | null, bannerUrl?: string | null }) {
+    const { error } = await supabase
+      .from('settings')
+      .update({
+        default_logo_url: settings.logoUrl,
+        default_banner_url: settings.bannerUrl,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', 'global_settings');
+
+    if (error) {
+      console.error('Error saving settings:', error);
+      throw error;
+    }
+    return true;
   }
 };

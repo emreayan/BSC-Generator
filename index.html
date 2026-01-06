@@ -1,80 +1,145 @@
 <!DOCTYPE html>
 <html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bsc Young Learners Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BSC Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* PRINT HARD FIX CSS */
+    @media print {
+
+      /* 1. Page Size - A4 Portrait */
+      @page {
+        size: 210mm 297mm;
+        margin: 0;
+      }
+
+      /* 2. Reset everything */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      html,
       body {
-        font-family: 'Inter', sans-serif;
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        overflow: hidden !important;
       }
 
-      /* PRINT HARD FIX CSS */
-      @media print {
-        /* 1. Reset Page and Body */
-        html, body, #root {
-          height: auto !important;
-          overflow: visible !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          background: white !important;
-        }
-
-        /* 2. Hide EVERYTHING initially */
-        body * {
-          visibility: hidden;
-        }
-
-        /* 3. Show ONLY the printable content container and its children */
-        #printable-content, #printable-content * {
-          visibility: visible;
-        }
-
-        /* 4. Position the content at the absolute top-left of the paper */
-        #printable-content {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-          margin: 0;
-          padding: 0;
-        }
-
-        /* 5. Force Background Graphics & Colors */
-        * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-
-        /* 6. Hide Elements marked as no-print specifically (like buttons inside the layout) */
-        .no-print {
-          display: none !important;
-        }
-
-        /* 7. Setup Page Size (A4) and remove browser margins */
-        @page {
-          size: A4;
-          margin: 0mm; 
-        }
+      /* 3. Hide EVERYTHING first */
+      body>* {
+        display: none !important;
       }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.45.0"
-  }
-}
-</script>
+
+      /* 4. Show only #root */
+      #root {
+        display: block !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      /* 5. Hide everything inside root except printable-content */
+      #root>* {
+        display: none !important;
+      }
+
+      #root>*:has(#printable-content),
+      #printable-content {
+        display: block !important;
+        visibility: visible !important;
+      }
+
+      /* 6. Force A4 on printable-content */
+      #printable-content {
+        width: 210mm !important;
+        height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+      }
+
+      #printable-content>div {
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+      }
+
+      #printable-content * {
+        visibility: visible !important;
+      }
+
+      /* 7. Hide no-print elements */
+      .no-print {
+        display: none !important;
+        visibility: hidden !important;
+      }
+
+      /* 8. Page break controls */
+      .page-break-before {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+    }
+
+    /* PDF Generation Helpers - A4 Portrait: 210mm × 297mm */
+    .pdf-container {
+      width: 210mm;
+      height: 297mm;
+      max-width: 210mm;
+      max-height: 297mm;
+      background: white;
+      overflow: hidden;
+      aspect-ratio: 210 / 297;
+    }
+
+    .page-break-before {
+      page-break-before: always;
+      break-before: page;
+    }
+
+    .page-break-after {
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .no-break {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+  </style>
 </head>
-  <body class="bg-gray-50 text-slate-800 antialiased">
-    <div id="root"></div>
-  </body>
+
+<body class="bg-gray-50 text-slate-800 antialiased">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>

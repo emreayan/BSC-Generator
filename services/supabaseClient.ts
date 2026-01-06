@@ -4,8 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 // LÜTFEN AŞAĞIDAKİ ALANLARI KENDİ SUPABASE PROJE BİLGİLERİNİZLE GÜNCELLEYİN
 // ------------------------------------------------------------------
 
-const SUPABASE_URL = 'https://sbcguecybdjgyhszmanr.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNiY2d1ZWN5YmRqZ3loc3ptYW5yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNjU0NjQsImV4cCI6MjA3OTk0MTQ2NH0.PVUShmxjJMFYOzsiJZux_uvLYnnCoFa0vGKteL1FfC0';
+const SUPABASE_URL = 'https://erozsjsztxoxrzyvgopo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyb3pzanN6dHhveHJ6eXZnb3BvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2Mzk0NzcsImV4cCI6MjA4MzIxNTQ3N30.rWC9Z_I-aBvQPeE9JWSkOJTVlIfuBMa93Vt0xUMtb5s';
 
 // ------------------------------------------------------------------
 
