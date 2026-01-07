@@ -378,9 +378,7 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, custo
                                 <div className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1 text-[10px] text-white/90">
                                     <CalendarDays className="w-3 h-3 text-[#6499E9]" />
                                     <span className="font-medium">
-                                        {quote.startDate && quote.endDate
-                                            ? `${new Date(quote.startDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} - ${new Date(quote.endDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}`
-                                            : program.dates.replace(/\//g, ',')}
+                                        {program.dates.split('/').map(d => d.trim()).join(', ')}
                                     </span>
                                 </div>
 
@@ -442,6 +440,27 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, custo
 
                         {/* RIGHT COLUMN: Price & Quote Details */}
                         <div className="col-span-5 flex flex-col gap-4">
+
+                            {/* Travel Dates Box (New Request) */}
+                            {quote.startDate && quote.endDate && (
+                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-1 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-2 opacity-10">
+                                        <CalendarDays className="w-12 h-12 text-[#6499E9]" />
+                                    </div>
+                                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-1">
+                                        <CalendarDays className="w-3.5 h-3.5 text-[#6499E9]" />
+                                        Seyahat Tarihleri
+                                    </h3>
+                                    <div className="text-base font-black text-slate-800 z-10">
+                                        {new Date(quote.startDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                        <span className="mx-2 text-slate-300">|</span>
+                                        {new Date(quote.endDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                    </div>
+                                    <div className="text-[10px] text-slate-500 font-medium">
+                                        Toplam Süre: <span className="text-[#6499E9] font-bold">{quote.durationWeeks} Hafta</span>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Price Box */}
                             <div className="bg-[#0B1221] text-white rounded-2xl p-6 shadow-xl relative overflow-hidden group">
