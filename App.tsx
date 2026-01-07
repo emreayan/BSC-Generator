@@ -838,7 +838,7 @@ const App: React.FC = () => {
                 {view === AppView.DETAIL && selectedProgram && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {/* Hero Section */}
-                        <div className="relative h-[60vh] min-h-[500px] w-full bg-slate-900 group">
+                        <div className="relative h-[40vh] min-h-[350px] w-full bg-slate-900 group">
                             <img
                                 src={heroImage}
                                 alt={selectedProgram.name}
@@ -866,13 +866,13 @@ const App: React.FC = () => {
                                 )}
                             </div>
 
-                            <div className="absolute inset-0 flex flex-col justify-end pb-16 px-4">
+                            <div className="absolute inset-0 flex flex-col justify-end pb-10 px-4">
                                 <div className="max-w-7xl mx-auto w-full">
                                     <div className="flex items-center gap-2 text-blue-400 font-bold uppercase tracking-widest mb-3">
                                         <MapPin className="w-5 h-5" />
                                         {selectedProgram.city}, {selectedProgram.country}
                                     </div>
-                                    <h1 className="text-5xl md:text-7xl font-black text-white mb-6 drop-shadow-lg tracking-tight">
+                                    <h1 className="text-4xl md:text-6xl font-black text-white mb-6 drop-shadow-lg tracking-tight">
                                         {selectedProgram.name}
                                     </h1>
                                     <div className="flex flex-wrap gap-6 text-white/90 text-lg font-medium">
