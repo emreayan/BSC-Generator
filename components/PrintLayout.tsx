@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Program, QuoteDetails, PortalType } from '../types';
-import { MapPin, Clock, Users, Check, Phone, Mail, Globe, Sparkles, Palette, Type, Building2, UserCircle, CalendarDays, Star, Plane, Camera, Save, Download, Loader, Home, Info } from 'lucide-react';
+import { MapPin, Clock, Users, Check, Phone, Mail, Globe, Sparkles, Palette, Type, Building2, UserCircle, CalendarDays, Star, Plane, Camera, Save, Download, Loader, Home, Info, GraduationCap } from 'lucide-react';
 import { generateEmailDraft } from '../services/geminiService';
 
 interface PrintLayoutProps {
@@ -294,41 +294,42 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, custo
           The index.html CSS targets THIS ID and hides everything else during print.
       */}
             <div id="printable-content" className="pdf-container mx-auto">
-                <div className="w-[210mm] h-[297mm] max-w-[210mm] max-h-[297mm] mx-auto bg-white shadow-2xl print:shadow-none relative overflow-hidden flex flex-col pt-6 px-8" style={fontStyle}>
+                <div className="w-[210mm] h-[297mm] max-w-[210mm] max-h-[297mm] mx-auto bg-white shadow-2xl print:shadow-none relative overflow-hidden flex flex-col pt-4 px-8" style={fontStyle}>
 
-                    {/* Header Section */}
-                    <div className="flex justify-between items-end mb-3 border-b pb-2 border-gray-100">
-                        {/* Left: Logo Area */}
-                        <div className="relative group">
-                            <div className="relative">
+                    {/* Compact Header */}
+                    <div className="flex justify-between items-end mb-1.5 pb-1.5 border-b border-slate-100 pt-4 px-5 shrink-0">
+                        <div className="flex flex-col items-start gap-1">
+                            {/* Logo Area */}
+                            <div className="relative group">
                                 {customLogo ? (
-                                    <img src={customLogo} alt="Logo" className="h-12 w-auto object-contain mix-blend-multiply" />
+                                    <img src={customLogo} alt="Logo" className="h-10 w-auto object-contain" />
                                 ) : (
-                                    <div className="flex flex-col">
-                                        <h1 className="text-xl font-extrabold tracking-tight text-slate-800 uppercase">BSC Education</h1>
-                                        <span className="text-[10px] tracking-widest text-slate-400 font-medium">YOUNG LEARNERS</span>
+                                    <div className="flex items-center gap-2 text-slate-700">
+                                        <div className="bg-[#6499E9] p-1.5 rounded-lg">
+                                            <GraduationCap className="h-5 w-5 text-white" />
+                                        </div>
+                                        <span className="font-bold text-lg tracking-tight leading-none">BSC Education</span>
                                     </div>
                                 )}
 
-                                {/* Logo Upload Button (Visible only on Screen) */}
-                                <label className="absolute -top-3 -right-3 p-1.5 bg-[#6499E9] text-white rounded-full shadow-lg cursor-pointer hover:bg-[#5a8bd5] transition-transform hover:scale-110 no-print z-50 flex items-center justify-center opacity-0 group-hover:opacity-100" title="Logo Yükle">
+                                {/* Logo Upload Overlay (Print Hidden) */}
+                                <label className="absolute -right-6 -top-2 cursor-pointer bg-white text-slate-500 hover:text-[#6499E9] p-1 rounded-full shadow-sm border border-slate-200 opacity-0 group-hover:opacity-100 transition-opacity print:hidden" title="Logoyu Değiştir">
                                     <input type="file" accept="image/*" className="hidden" onChange={onUploadLogo} />
                                     <Camera className="w-3 h-3" />
                                 </label>
+
+                                {customLogo && (
+                                    <button
+                                        onClick={onSaveLogoDefault}
+                                        className="absolute -right-6 top-6 cursor-pointer bg-white text-slate-500 hover:text-green-600 p-1 rounded-full shadow-sm border border-slate-200 opacity-0 group-hover:opacity-100 transition-opacity print:hidden"
+                                        title="Varsayılan Logo Olarak Kaydet"
+                                    >
+                                        <Save className="w-3 h-3" />
+                                    </button>
+                                )}
                             </div>
-
-                            {/* Save Default Button */}
-                            {customLogo && (
-                                <button
-                                    onClick={handleSaveLogo}
-                                    className={`absolute -bottom-6 left-0 text-[8px] font-bold px-2 py-0.5 rounded shadow-sm no-print flex items-center gap-1 transition-all opacity-0 group-hover:opacity-100 ${logoSaved ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}
-                                >
-                                    {logoSaved ? <Check className="w-2 h-2" /> : <Save className="w-2 h-2" />}
-                                    {logoSaved ? 'Kaydedildi' : 'Varsayılan Yap'}
-                                </button>
-                            )}
+                            <span className="text-[10px] text-slate-400 font-medium tracking-widest uppercase ml-0.5">Young Learners</span>
                         </div>
-
                         {/* Right: Agency Info */}
                         <div className="text-right flex flex-col gap-0.5 min-w-[140px]">
                             <div className="flex justify-between items-center gap-4 text-[9px] text-slate-600">
