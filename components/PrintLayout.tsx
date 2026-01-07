@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Program, QuoteDetails, PortalType } from '../types';
-import { MapPin, Clock, Users, Check, Phone, Mail, Globe, Sparkles, Palette, Type, Building2, UserCircle, CalendarDays, Star, Plane, Camera, Save, Download, Loader, Home } from 'lucide-react';
+import { MapPin, Clock, Users, Check, Phone, Mail, Globe, Sparkles, Palette, Type, Building2, UserCircle, CalendarDays, Star, Plane, Camera, Save, Download, Loader, Home, Info } from 'lucide-react';
 import { generateEmailDraft } from '../services/geminiService';
 
 interface PrintLayoutProps {
@@ -376,7 +376,11 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, custo
                                 {/* Program Dates Pill */}
                                 <div className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1 text-[10px] text-white/90">
                                     <CalendarDays className="w-3 h-3 text-[#6499E9]" />
-                                    <span className="font-medium">{program.dates.replace(/\//g, ',')}</span>
+                                    <span className="font-medium">
+                                        {quote.startDate && quote.endDate
+                                            ? `${new Date(quote.startDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} - ${new Date(quote.endDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}`
+                                            : program.dates.replace(/\//g, ',')}
+                                    </span>
                                 </div>
 
                                 {/* Age Pill */}
@@ -388,8 +392,104 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, custo
                         </div>
                     </div>
 
-                    {/* Content Placeholder */}
-                    <div className="flex-grow"></div>
+                    {/* Main Content Grid */}
+                    <div className="grid grid-cols-12 gap-8 flex-grow mb-8 px-2">
+
+                        {/* LEFT COLUMN: Features & Services */}
+                        <div className="col-span-7 flex flex-col gap-6">
+
+                            {/* Accommodation Highlight */}
+                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-2">
+                                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <Home className="w-3.5 h-3.5 text-[#6499E9]" />
+                                    Konaklama
+                                </h3>
+                                <div className="text-sm font-bold text-slate-800 mb-1">{program.accommodationType}</div>
+                                <div className="text-[10px] text-slate-500 leading-relaxed">{program.accommodationDetails}</div>
+                            </div>
+
+                            {/* Airport Transfer Box (Moved here as requested) */}
+                            {quote.transferAirport && (
+                                <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100 border-l-4 border-l-[#6499E9]">
+                                    <h3 className="text-xs font-bold text-[#6499E9] uppercase tracking-wider mb-2 flex items-center gap-2">
+                                        <Plane className="w-3.5 h-3.5" />
+                                        Havaalanı Transferi
+                                    </h3>
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-bold text-slate-700 text-sm">{quote.transferAirport}</span>
+                                        <span className="text-[10px] bg-white px-2 py-0.5 rounded border border-blue-200 text-[#6499E9] font-bold uppercase">{quote.transferType}</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Included Services */}
+                            <div>
+                                <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+                                    <Check className="w-4 h-4 text-[#6499E9]" />
+                                    Dahil Hizmetler
+                                </h3>
+                                <ul className="grid grid-cols-1 gap-2.5">
+                                    {program.includedServices.map((service, idx) => (
+                                        <li key={idx} className="flex items-start gap-2.5 text-[11px] text-slate-600 group">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[#9EDDFF] mt-1.5 group-hover:bg-[#6499E9] transition-colors shrink-0"></div>
+                                            <span>{formatText(service)}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* RIGHT COLUMN: Price & Quote Details */}
+                        <div className="col-span-5 flex flex-col gap-4">
+
+                            {/* Price Box */}
+                            <div className="bg-[#0B1221] text-white rounded-2xl p-6 shadow-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-[#6499E9] rounded-full blur-[50px] opacity-20 -mr-10 -mt-10"></div>
+
+                                <div className="relative z-10 text-center">
+                                    <p className="text-[#6499E9] font-bold text-xs uppercase tracking-widest mb-1">Kişi Başı Ücret</p>
+                                    <div className="text-4xl font-black tracking-tighter mb-1 text-white">
+                                        {quote.pricePerStudent}
+                                    </div>
+                                    <div className="inline-block bg-white/10 px-2 py-0.5 rounded text-[10px] font-medium text-slate-300">
+                                        {quote.priceType === 'Gross' ? 'Komisyon Dahil (GROSS)' : 'Net Fiyat'}
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 gap-4 text-center">
+                                    <div>
+                                        <p className="text-slate-400 text-[9px] uppercase font-bold">Öğrenci</p>
+                                        <p className="font-bold text-lg">{quote.studentCount}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-slate-400 text-[9px] uppercase font-bold">Grup Lideri</p>
+                                        <p className="font-bold text-lg">{quote.groupLeaderCount}</p>
+                                    </div>
+                                </div>
+
+                                {quote.extraLeaderPrice && (
+                                    <div className="mt-4 pt-4 border-t border-white/10 text-center">
+                                        <p className="text-slate-400 text-[9px] uppercase font-bold mb-1">Ek Lider Ücreti</p>
+                                        <p className="font-bold text-white">{quote.extraLeaderPrice}</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Additional Notes */}
+                            {quote.notes && (
+                                <div className="bg-yellow-50/50 rounded-xl p-4 border border-yellow-100">
+                                    <h3 className="text-[10px] font-bold text-yellow-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                        <Info className="w-3 h-3" />
+                                        Notlar
+                                    </h3>
+                                    <p className="text-[10px] text-slate-600 italic leading-relaxed">
+                                        {quote.notes}
+                                    </p>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
 
                     {/* Fixed Gallery Grid (2 rows x 4 cols = 8 images) */}
                     <div className="mb-4">

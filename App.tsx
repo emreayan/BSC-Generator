@@ -204,6 +204,13 @@ const App: React.FC = () => {
         setView(AppView.LANDING);
     };
 
+    const handleNewQuote = () => {
+        if (window.confirm('Mevcut fiyatlandırma bilgileri silinecektir. Emin misiniz?')) {
+            setQuoteDetails(null);
+            setView(AppView.DETAIL);
+        }
+    };
+
     // --- Program Specific Default Saving ---
     const handleSaveProgramDefaults = async () => {
         if (!selectedProgram) return;
@@ -408,6 +415,12 @@ const App: React.FC = () => {
     };
 
     const processGalleryFiles = (files: FileList) => {
+        // Enforce 8 image limit
+        if (currentGalleryImages.length + files.length > 8) {
+            alert('Galeriye en fazla 8 adet görsel ekleyebilirsiniz.');
+            return;
+        }
+
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             if (file.type.startsWith('image/')) {
@@ -628,6 +641,16 @@ const App: React.FC = () => {
                             {view === AppView.DETAIL && (
                                 <button onClick={handleBackToList} className="text-sm font-medium text-slate-500 hover:text-[#6499E9] flex items-center gap-1">
                                     Tüm Programlar
+                                </button>
+                            )}
+
+                            {view === AppView.DETAIL && selectedProgram && (
+                                <button
+                                    onClick={handleNewQuote}
+                                    className="text-xs font-bold text-[#6499E9] bg-blue-50 hover:bg-[#6499E9] hover:text-white px-3 py-1.5 rounded-full transition-colors flex items-center gap-2 border border-blue-100"
+                                >
+                                    <RotateCcw className="w-3 h-3" />
+                                    Yeni Fiyatlandırma
                                 </button>
                             )}
 
@@ -1042,6 +1065,7 @@ const App: React.FC = () => {
                                                 onGenerate={handleGenerateQuote}
                                                 onCancel={() => { }}
                                                 portalType={currentPortal}
+                                                initialData={quoteDetails}
                                             />
                                         </div>
 

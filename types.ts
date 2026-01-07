@@ -34,6 +34,10 @@ export interface QuoteDetails {
   transferAirport?: string;
   transferType?: 'Solo' | 'Multi-Person' | 'Accompanied (UM)';
   // transferFee removed as per request
+
+  // New Date Fields
+  startDate?: string;
+  endDate?: string;
 }
 
 export type PortalType = 'YL_GROUPS' | 'YL_INDIVIDUAL' | 'ADULTS';
