@@ -110,6 +110,7 @@
     }
 
     /* PDF Generation Helpers - A4 Portrait: 210mm × 297mm */
+    /* PDF Generation Helpers - A4 Portrait: 210mm × 297mm */
     .pdf-container {
       width: 210mm;
       height: 297mm;
@@ -118,6 +119,10 @@
       background: white;
       overflow: hidden;
       aspect-ratio: 210 / 297;
+      margin: 2rem auto;
+      /* Centered visually with some top/bottom space */
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      /* Subtle shadow for better preview */
     }
 
     .page-break-before {
