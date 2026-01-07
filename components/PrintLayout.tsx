@@ -117,13 +117,12 @@ const formatText = (text: string) => {
 // Helper to clean date strings (replace slash with comma)
 const cleanDateString = (dateStr: string) => {
     if (!dateStr) return '';
-    let temp = String(dateStr);
-    // Replace slashes with commas using split/join to avoid regex issues
-    temp = temp.split('/').join(',');
-    temp = temp.split('\\').join(',');
+    // Aggressive clean: Keep only letters (including Turkish), numbers, spaces, dots, dashes.
+    // Everything else (slashes, pipes, special chars) becomes a comma.
+    let cleaned = String(dateStr).replace(/[^a-zA-Z0-9\sğüşıöçĞÜŞİÖÇ\.,-]/g, ',');
 
     // Split by comma, trim whitespace, remove empty parts, rejoin
-    return temp.split(',').map(s => s.trim()).filter(s => s.length > 0).join(', ');
+    return cleaned.split(',').map(s => s.trim()).filter(s => s.length > 0).join(', ');
 };
 
 const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, customLogo, customBanner, timetableImages, portalType, onUploadLogo, onSaveLogoDefault }) => {
