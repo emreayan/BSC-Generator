@@ -114,6 +114,15 @@ const formatText = (text: string) => {
     });
 };
 
+// Helper to clean date strings (replace slash with comma)
+const cleanDateString = (dateStr: string) => {
+    if (!dateStr) return '';
+    // Replace slashes (and surrounding spaces) with commas
+    let cleaned = dateStr.replace(/\s*[\/\\]\s*/g, ',');
+    // Split by comma, trim, filter empty
+    return cleaned.split(',').map(s => s.trim()).filter(Boolean).join(', ');
+};
+
 const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, customLogo, customBanner, timetableImages, portalType, onUploadLogo, onSaveLogoDefault }) => {
     const [emailDraft, setEmailDraft] = useState<string>('');
     const [isGenerating, setIsGenerating] = useState(false);
@@ -378,7 +387,7 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, custo
                                 <div className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1 text-[10px] text-white/90">
                                     <CalendarDays className="w-3 h-3 text-[#6499E9]" />
                                     <span className="font-medium">
-                                        {program.dates.split(/[\/\,]/).map(d => d.trim()).filter(Boolean).join(', ')}
+                                        {cleanDateString(program.dates)}
                                     </span>
                                 </div>
 
