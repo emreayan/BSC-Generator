@@ -877,7 +877,7 @@ const App: React.FC = () => {
                                     </h1>
                                     <div className="flex flex-wrap gap-6 text-white/90 text-lg font-medium">
                                         <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-                                            <Calendar className="w-5 h-5 text-blue-400" /> {selectedProgram.dates}
+                                            <Calendar className="w-5 h-5 text-blue-400" /> {selectedProgram.dates.replace(/\s*\/\s*/g, ', ')}
                                         </span>
                                         <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
                                             <Users className="w-5 h-5 text-orange-400" /> {selectedProgram.ageRange}
