@@ -378,7 +378,7 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, custo
                                 <div className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1 text-[10px] text-white/90">
                                     <CalendarDays className="w-3 h-3 text-[#6499E9]" />
                                     <span className="font-medium">
-                                        {program.dates.split('/').map(d => d.trim()).join(', ')}
+                                        {program.dates.split(/[\/\,]/).map(d => d.trim()).filter(Boolean).join(', ')}
                                     </span>
                                 </div>
 
