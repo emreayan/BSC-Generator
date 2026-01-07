@@ -294,8 +294,140 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ program, quote, onBack, custo
           The index.html CSS targets THIS ID and hides everything else during print.
       */}
             <div id="printable-content" className="pdf-container mx-auto">
-                <div className="w-[210mm] h-[297mm] max-w-[210mm] max-h-[297mm] mx-auto bg-white shadow-2xl print:shadow-none relative overflow-hidden flex flex-col mt-8 print:mt-0" style={fontStyle}>
-                    {/* Content Cleared for Reconstruction */}
+                <div className="w-[210mm] h-[297mm] max-w-[210mm] max-h-[297mm] mx-auto bg-white shadow-2xl print:shadow-none relative overflow-hidden flex flex-col pt-6 px-8" style={fontStyle}>
+
+                    {/* Header Section */}
+                    <div className="flex justify-between items-end mb-3 border-b pb-2 border-gray-100">
+                        {/* Left: Logo Area */}
+                        <div className="relative group">
+                            <div className="relative">
+                                {customLogo ? (
+                                    <img src={customLogo} alt="Logo" className="h-12 w-auto object-contain mix-blend-multiply" />
+                                ) : (
+                                    <div className="flex flex-col">
+                                        <h1 className="text-xl font-extrabold tracking-tight text-slate-800 uppercase">BSC Education</h1>
+                                        <span className="text-[10px] tracking-widest text-slate-400 font-medium">YOUNG LEARNERS</span>
+                                    </div>
+                                )}
+
+                                {/* Logo Upload Button (Visible only on Screen) */}
+                                <label className="absolute -top-3 -right-3 p-1.5 bg-[#6499E9] text-white rounded-full shadow-lg cursor-pointer hover:bg-[#5a8bd5] transition-transform hover:scale-110 no-print z-50 flex items-center justify-center opacity-0 group-hover:opacity-100" title="Logo Yükle">
+                                    <input type="file" accept="image/*" className="hidden" onChange={onUploadLogo} />
+                                    <Camera className="w-3 h-3" />
+                                </label>
+                            </div>
+
+                            {/* Save Default Button */}
+                            {customLogo && (
+                                <button
+                                    onClick={handleSaveLogo}
+                                    className={`absolute -bottom-6 left-0 text-[8px] font-bold px-2 py-0.5 rounded shadow-sm no-print flex items-center gap-1 transition-all opacity-0 group-hover:opacity-100 ${logoSaved ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}
+                                >
+                                    {logoSaved ? <Check className="w-2 h-2" /> : <Save className="w-2 h-2" />}
+                                    {logoSaved ? 'Kaydedildi' : 'Varsayılan Yap'}
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Right: Agency Info */}
+                        <div className="text-right flex flex-col gap-0.5 min-w-[140px]">
+                            <div className="flex justify-between items-center gap-4 text-[9px] text-slate-600">
+                                <span className="font-bold text-slate-800 uppercase tracking-wider">Acente</span>
+                                <span className="font-medium truncate max-w-[150px]">{quote.agencyName}</span>
+                            </div>
+                            <div className="flex justify-between items-center gap-4 text-[9px] text-slate-600">
+                                <span className="font-bold text-slate-800 uppercase tracking-wider">Yetkili</span>
+                                <span className="font-medium truncate max-w-[150px]">{quote.consultantName}</span>
+                            </div>
+                            <div className="flex justify-between items-center gap-4 text-[9px] text-slate-600">
+                                <span className="font-bold text-slate-800 uppercase tracking-wider">Tarih</span>
+                                <div className="flex items-center gap-1">
+                                    <CalendarDays className="w-2 h-2" />
+                                    <span>{new Date().toLocaleDateString('tr-TR')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Hero Banner Section */}
+                    <div className="mb-4 relative rounded-xl overflow-hidden h-40 shrink-0 shadow-sm print:h-36 group">
+                        {/* Background Image */}
+                        <img src={program.heroImage} alt={program.name} className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105" />
+
+                        {/* Dark Blue Overlay */}
+                        <div className="absolute inset-0 bg-[#0B1221]/80 mix-blend-multiply"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1221] via-transparent to-transparent opacity-90"></div>
+
+                        {/* Banner Content */}
+                        <div className="absolute inset-0 p-5 flex flex-col justify-end items-start text-white">
+                            {/* Location Top */}
+                            <div className="flex items-center gap-1.5 mb-1.5 text-[#6499E9] font-bold tracking-wider text-[10px] uppercase">
+                                <MapPin className="w-3 h-3" />
+                                <span>{program.city}, {program.country}</span>
+                            </div>
+
+                            {/* Program Title */}
+                            <h1 className="text-3xl print:text-2xl font-black tracking-tight mb-3 text-white leading-none shadow-sm">
+                                {program.name}
+                            </h1>
+
+                            {/* Info Pills */}
+                            <div className="flex items-center gap-2">
+                                {/* Program Dates Pill */}
+                                <div className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1 text-[10px] text-white/90">
+                                    <CalendarDays className="w-3 h-3 text-[#6499E9]" />
+                                    <span className="font-medium">{program.dates.replace(/\//g, ',')}</span>
+                                </div>
+
+                                {/* Age Pill */}
+                                <div className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1 text-[10px] text-white/90">
+                                    <Users className="w-3 h-3 text-[#EAB308]" />
+                                    <span className="font-medium">{program.ageRange}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Content Placeholder */}
+                    <div className="flex-grow"></div>
+
+                    {/* Fixed Gallery Grid (2 rows x 4 cols = 8 images) */}
+                    <div className="mb-4">
+                        <div className="grid grid-cols-4 gap-2">
+                            {program.galleryImages.slice(0, 8).map((img, idx) => (
+                                <div key={idx} className="aspect-video rounded overflow-hidden border border-gray-100 shadow-sm relative group">
+                                    <img src={img} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+                                </div>
+                            ))}
+                            {/* Fill empty slots if less than 8 images */}
+                            {[...Array(Math.max(0, 8 - program.galleryImages.length))].map((_, idx) => (
+                                <div key={`empty-${idx}`} className="aspect-video rounded bg-slate-50 border border-slate-100 flex items-center justify-center">
+                                    <Camera className="w-4 h-4 text-slate-300" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Footer - Minimal Gradient Line & Info */}
+                    <footer className="mt-auto -mx-8">
+                        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 px-8 py-2 flex justify-center items-center gap-4 text-[8px] text-slate-800 font-bold border-t border-emerald-100">
+                            <div className="flex items-center gap-1.5">
+                                <Phone className="w-2.5 h-2.5 text-[#00B092]" />
+                                <span>+90 537 473 00 94</span>
+                            </div>
+                            <span className="text-slate-300">|</span>
+                            <div className="flex items-center gap-1.5">
+                                <Mail className="w-2.5 h-2.5 text-[#00B092]" />
+                                <span>emre.ayan@bsceducation.com</span>
+                            </div>
+                            <span className="text-slate-300">|</span>
+                            <div className="flex items-center gap-1.5">
+                                <Globe className="w-2.5 h-2.5 text-[#00B092]" />
+                                <span>www.bsceducation.com/young-learners</span>
+                            </div>
+                        </div>
+                    </footer>
                 </div>
 
                 {/* --- PAGE 2: TIMETABLES --- */}
